@@ -6,7 +6,7 @@ use dotenv_parser::parse_dotenv;
 #[macro_use]
 extern crate gmod;
 
-unsafe extern "C-unwind" fn read_env(lua: gmod::lua::State) -> i32 {
+unsafe extern "C-unwind" fn getenv(lua: gmod::lua::State) -> i32 {
   let denv_contents = fs::read_to_string("./garrysmod/.env");
 
   if denv_contents.is_ok() {
@@ -36,10 +36,15 @@ unsafe extern "C-unwind" fn read_env(lua: gmod::lua::State) -> i32 {
 
 #[gmod13_open]
 pub unsafe extern "C-unwind" fn gmod13_open(lua: gmod::lua::State) -> i32 {
-  lua.push_function(read_env);
-  lua.set_global(lua_string!("env"));
+	lua.get_global(lua_string!("os"));
 
-  lua.pop();
+	if lua.is_nil(-1) {
+		lua.pop();
+		lua.new_table();
+	}
+
+  lua.push_function(getenv);
+  lua.set_field(-2, lua_string!("getenv"));
 
   return 0;
 }

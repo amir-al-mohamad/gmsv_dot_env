@@ -9,7 +9,7 @@
 ```lua
   require("dot_env")
 
-  print(env("TEST"))
+  print(os.getenv("TEST"))
 ```
 
 ## Благодарности
